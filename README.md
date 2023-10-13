@@ -3,6 +3,6 @@ Generative AI web application to enhance user Interaction with Interaction with 
 
 ## Instalación
 ```bash
-  yarn install
+     yarn install
 ```
     
