@@ -1,18 +1,19 @@
 import { Router } from "express";
 import "dotenv/config.js"
 
-// import { } from "../controllers/feed_controller.js";
+import {find, findone } from "../controllers/community_controller.js";
 // import { trimMiddleware } from "../common/trimMiddelware.js";
 const community = Router();
 
 community.get(
-    "/", ()=>{console.log("youre in community");}
+    "/", 
+    find
    
 );
 
 community.get(
     "/",
-   
+    findone
 )
 
 community.put(

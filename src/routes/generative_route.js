@@ -1,17 +1,19 @@
 import { Router } from "express";
 import "dotenv/config.js"
 
-// import { } from "../controllers/feed_controller.js";
+import {find, findone } from "../controllers/generative_controller.js";
 // import { trimMiddleware } from "../common/trimMiddelware.js";
 const generative = Router();
 
 generative.get(
-    "/", ()=>{console.log("youre in home");}
+    "/",
+    find
    
 );
 
 generative.get(
-    "/",
+    "/:id",
+    findone
    
 )
 
@@ -27,7 +29,7 @@ generative.post(
 );
 
 generative.delete(
-    "/:documento",
+    "/:id",
 );
 
 export {
