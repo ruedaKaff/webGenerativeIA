@@ -1,36 +1,18 @@
 import { Router } from "express";
-import "dotenv/config.js"
+import "dotenv/config.js";
 
-import {find, findone } from "../controllers/community_controller.js";
+import { find, findone } from "../controllers/community_controller.js";
 // import { trimMiddleware } from "../common/trimMiddelware.js";
 const community = Router();
 
-community.get(
-    "/", 
-    find
-   
-);
+community.get("/", find);
 
-community.get(
-    "/",
-    findone
-)
+community.get("/:id", findone);
 
-community.put(
-    "/"
-    
-);
-  
+community.put("/");
 
-community.post(
-    "/",
-    
-);
+community.post("/");
 
-community.delete(
-    "/:documento",
-);
+community.delete("/:id");
 
-export {
-    community
-}
+export { community };
