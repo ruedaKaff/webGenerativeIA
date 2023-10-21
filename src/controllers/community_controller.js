@@ -36,4 +36,24 @@ const findone = (req, res = response) => {
   );
 };
 
-export { find, findone };
+const create = (req, res = response) => {
+
+  const { user_id, input, output, outimage, model_type, username } = req.body;
+ 
+  connection.query(
+    // Realiza una consulta SQL para insertar un nuevo community item en la tabla community con NOW() para FechaHoraAuditoria
+    `INSERT INTO community ( user_id, input, output, outimage, model_type, username, updated_at)
+    VALUES (?, ?, ?, ?, ?, ?, NOW());
+    `,
+    // Los valores para la consulta se obtienen de las variables extraídas del cuerpo de la solicitud
+    [user_id, input, output, outimage, model_type, username],
+    function (err, result, fields) {
+      // Si ocurre un error, devuelve el mensaje de error; de lo contrario, devuelve el resultado de la inserción
+      err 
+      ? res.status(500).json({ error: err.message }) 
+      : res.status(200).json({ message: 'Item creado exitosamente' });
+    }
+  );
+};
+
+export { find, findone, create};

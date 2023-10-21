@@ -1,5 +1,6 @@
 import  axios  from "axios";
 
+
 const summarize = async (req, res = response) => {
   // "NLP-sumarize service here"
     console.log("Testing nlp");
@@ -25,7 +26,7 @@ const summarize = async (req, res = response) => {
 
 const entity = async (req, res = response) => {
   // "NLP-entity recognition service here"
-
+  console.log("Testing nlp2");
   try {
     const prompt = req.body.prompt;
 
@@ -41,7 +42,7 @@ const entity = async (req, res = response) => {
       res.status(500).json({ error: "Summarization failed" });
     }
   } catch (error) {
-    console.error("Summarization error:", error);
+    console.error("Summarization error:");
     res.status(500).json({ error: "Summarization failed" });
   }
 };
