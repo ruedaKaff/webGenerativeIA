@@ -1,7 +1,8 @@
 import express, { json } from "express";
 import cors from "cors";
-import { generative } from "./routes/generative_route.js"
-import { community } from "./routes/community_route.js"
+import { generative } from "./routes/generative_routes.js"
+import { community } from "./routes/community_routes.js"
+import { nlp } from "./routes/nlp_routes.js"
 import "dotenv/config.js";
 
 const app = express();
@@ -9,7 +10,10 @@ const app = express();
 app
   .use(cors())
   .use(json())
-  .use("/home", generative)
+  .use("/generative", generative)
+  .use("/nlp", nlp)
+  // .use("/img-procesing", image-procesing)
+  // .use("/llm", chat)
   .use("/community",community)
   .listen(process.env.PORT, () => {
     console.log(`server running on http://localhost:${process.env.PORT}/`);
