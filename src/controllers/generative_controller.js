@@ -7,7 +7,6 @@ const find = (req, res = response) => {
     `
       SELECT * FROM sections;
     `,
-
     [],
     function (err, result, fields) {
       // Si no se encuentran resultados, devuelve un código de estado 404 y un mensaje de error
