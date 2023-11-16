@@ -1,86 +1,78 @@
-import { Router } from "express";
-import passport from "passport";
-import { connection } from "../common/connection.js";
-import { Strategy as GoogleStrategy } from "passport-google-oidc";
 
-function queryAsync(sql, values) {
-  return new Promise((resolve, reject) => {
-    connection.query(sql, values, (error, results) => {
-      if (error) {
-        reject(error);
-      } else {
-        resolve(results);
-      }
-    });
-  });
-}
+// export { login };
+import { Router } from "express";
+import UserController from "../controllers/users_controller.js"
+import passport from "passport";
+import GoogleStrategy from "passport-google-oauth2";
+import "dotenv/config.js";
+
 
 passport.use(
   new GoogleStrategy(
     {
-      clientID: process.env["GOOGLE_CLIENT_ID"],
-      clientSecret: process.env["GOOGLE_CLIENT_SECRET"],
-      callbackURL: "/oauth2/redirect/google",
-      scope: ["profile"],
+      clientID: process.env.GOOGLE_CLIENT_ID,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+      callbackURL: "http://localhost:9090/login/auth/google/callback",
+      passReqToCallback: true,
     },
-    async (issuer, profile, done) => {
+    async (request, accessToken, refreshToken, profile, done) => {
       try {
-        // Check if the user exists in your MySQL database
-        const userRows = await queryAsync(
-          "SELECT * FROM federated_credentials WHERE provider = ? AND subject = ?",
-          [issuer, profile.id]
-        );
-
-        if (userRows.length === 0) {
-          // User doesn't exist; insert into the database
-          const insertUserResult = await queryAsync(
-            "INSERT INTO users (name) VALUES (?)",
-            [profile.displayName]
-          );
-          const userId = insertUserResult.insertId;
-          await queryAsync(
-            "INSERT INTO federated_credentials (user_id, provider, subject) VALUES (?, ?, ?)",
-            [userId, issuer, profile.id]
-          );
-          const user = { id: userId, name: profile.displayName };
-          done(null, user);
-        } else {
-          // User exists; fetch user information
-          const user = userRows[0];
-          const userRowInUsersTable = await queryAsync(
-            "SELECT * FROM users WHERE id = ?",
-            [user.user_id]
-          );
-          if (userRowInUsersTable.length === 0) {
-            done(null, false);
-          } else {
-            done(null, userRowInUsersTable[0]);
-          }
-        }
+        console.log(profile);
+        const user = await UserController.createUser(profile);
+        return done(null, user);
       } catch (err) {
-        done(err);
+        console.error("Passport Google Strategy Error:", err);
+        return done(err);
       }
     }
   )
 );
+passport.serializeUser((user, done) => {
+  done(null, user);
+});
+
+passport.deserializeUser((user, done) => {
+  done(null, user);
+});
+
+const isLoggedIn = (req, res, next) => {
+  req.user ? next() : res.sendStatus(401);
+}
 const login = Router();
 
 login.get("/", function (req, res, next) {
   res.render("login");
 });
 
-login.get("/federated/google", passport.authenticate("google"));
-
-login.get("/signup", function (req, res, next) {
-  res.render("signup");
-});
+login.get(
+  "/auth/google",
+  passport.authenticate('google', { scope:
+    [ 'email', 'profile' ] }
+));
 
 login.get(
-  "/oauth2/redirect/google",
+  "/auth/google/callback",
   passport.authenticate("google", {
-    successRedirect: "/generative",
-    failureRedirect: "/login",
+    successRedirect: "/login/auth/protected",
+    failureRedirect: "/login/auth/google/failure",
   })
 );
+
+login.get("/auth/google/failure",(req, res )=> {
+  res.send("Something went wrong!");
+});
+
+
+login.get("/auth/protected",isLoggedIn,(req, res )=> {
+  let name = req.user.displayName;
+  res.send(`hello ${name} !`);
+  console.log(req.user);
+});
+
+login.use('/auth/logout', (req, res) => {
+    req.session.destroy();
+    res.send('See you !')
+})
+
 
 export { login };

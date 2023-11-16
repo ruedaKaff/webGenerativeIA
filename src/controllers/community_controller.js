@@ -1,27 +1,35 @@
 import { response } from "express";
-import { connection } from "../common/connection.js";
+import { pool } from "../common/connection.js";
 import "dotenv/config.js";
 
 const find = (req, res = response) => {
-  connection.query(
-    `SELECT community.*, users.user_identifier
+  pool.query(
+    `SELECT community.*, users.email
       FROM community
       INNER JOIN users ON community.user_id = users.id;
       
       `,
     [],
     function (err, result, fields) {
-      // Si no se encuentran resultados, devuelve un código de estado 404 y un mensaje de error
-      result.length == 0
-        ? res.status(404).json({ response: process.env.DEFAULT })
-        : res.json(result);
+      // Check for errors during the query
+      if (err) {
+        console.error(err);
+        return res.status(500).json({ error: 'Internal Server Error' });
+      }
+
+      // Check the length of the result before accessing its properties
+      if (result && result.length > 0) {
+        res.json(result);
+      } else {
+        res.status(404).json({ response: process.env.DEFAULT });
+      }
     }
   );
 };
 
 const findone = (req, res = response) => {
-  connection.query(
-    `SELECT community.*, users.user_identifier
+  pool.query(
+    `SELECT community.*, users.email
       FROM community
       INNER JOIN users ON community.user_id = users.id
       WHERE id_community= ?
@@ -29,9 +37,18 @@ const findone = (req, res = response) => {
     // Los parámetros para la consulta se obtienen del parámetro de ruta 'documento' de la solicitud
     [req.params.id],
     function (err, result, fields) {
-      result.length == 0
-        ? res.status(404).json({ response: process.env.DEFAULT })
-        : res.json(result);
+      // Check for errors during the query
+      if (err) {
+        console.error(err);
+        return res.status(500).json({ error: 'Internal Server Error' });
+      }
+
+      // Check the length of the result before accessing its properties
+      if (result && result.length > 0) {
+        res.json(result);
+      } else {
+        res.status(404).json({ response: process.env.DEFAULT });
+      }
     }
   );
 };
@@ -40,7 +57,7 @@ const create = (req, res = response) => {
 
   const { user_id, input, output, outimage, model_type, username } = req.body;
  
-  connection.query(
+  pool.query(
     // Realiza una consulta SQL para insertar un nuevo community item en la tabla community con NOW() para FechaHoraAuditoria
     `INSERT INTO community ( user_id, input, output, outimage, model_type, username, updated_at)
     VALUES (?, ?, ?, ?, ?, ?, NOW());

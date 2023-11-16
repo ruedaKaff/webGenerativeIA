@@ -1,9 +1,9 @@
 import { response } from "express";
-import { connection } from "../common/connection.js";
+import { pool } from "../common/connection.js";
 import "dotenv/config.js";
 
 const find = (req, res = response) => {
-  connection.query(
+  pool.query(
     `
       SELECT * FROM sections;
     `,
@@ -18,7 +18,7 @@ const find = (req, res = response) => {
 };
 
 const findone = (req, res = response) => {
-  connection.query(
+  pool.query(
     `SELECT * FROM sections 
      WHERE id = ?`,
     [req.params.id],
