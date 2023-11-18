@@ -17,11 +17,10 @@ passport.use(
     },
     async (request, accessToken, refreshToken, profile, done) => {
       try {
-        console.log(profile);
-        const user = await UserController.createUser(profile);
+        const user =  await UserController.createUser(profile);
+        // console.log(user);
         return done(null, user);
       } catch (err) {
-        console.error("Passport Google Strategy Error:", err);
         return done(err);
       }
     }
@@ -64,9 +63,10 @@ login.get("/auth/google/failure",(req, res )=> {
 
 
 login.get("/auth/protected",isLoggedIn,(req, res )=> {
-  let name = req.user.displayName;
+  let name = req.user.name;
   res.send(`hello ${name} !`);
-  console.log(req.user);
+  console.log('full response ?');
+  console.log(res.user);
 });
 
 login.use('/auth/logout', (req, res) => {
