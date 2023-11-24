@@ -18,9 +18,12 @@
     "dotenv": "^16.3.1",
     "ejs": "~2.6.1",
     "express": "^4.18.2",
-    "mysql": "^2.18.1",
+    "express-session": "^1.17.3",
+    "mkdirp": "^1.0.4",
+    "morgan": "^1.10.0",
+    "mysql2": "^3.6.3",
     "passport": "^0.6.0",
-    "passport-google-oidc": "^0.1.0"
+    "passport-google-oauth2": "^0.2.0"
   },
   "devDependencies": {
     "nodemon": "^3.0.1"

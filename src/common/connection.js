@@ -1,18 +1,18 @@
-import{ createConnection } from "mysql";
+import { createPool } from 'mysql2/promise';
 
-import "dotenv/config.js"
+import 'dotenv/config.js';
 
-const connection = createConnection({
-    host: process.env.HOSTNAME,
-    user: process.env.DBUSERNAME,
-    password: process.env.DBPASSWORD,
-    database: process.env.DBNAME
+// Create a MySQL connection pool
+const pool = createPool({
+  connectionLimit: 10, // Adjust based on your application's needs
+  host: process.env.HOSTNAME,
+  user: process.env.DBUSERNAME,
+  password: process.env.DBPASSWORD,
+  database: process.env.DBNAME,
 });
 
 
-connection.connect();
-export
+export { pool };
 
-{
-    connection
-}
+
+
