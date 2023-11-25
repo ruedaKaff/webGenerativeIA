@@ -5,11 +5,15 @@ import cors from "cors";
 import path, { dirname } from "path";
 import { fileURLToPath } from "url";
 import { login } from "./routes/auth_route.js";
-import session from "express-session";
-import { generative } from "./routes/generative_routes.js";
 import { community } from "./routes/community_routes.js";
+import { generative } from "./routes/generative_routes.js";
+import {image_processing} from "./routes/img_routes.js"
 import { nlp } from "./routes/nlp_routes.js";
+import session from "express-session";
+
+
 import passport from "passport";
+
 
 
 const __filename = fileURLToPath(import.meta.url);
@@ -37,7 +41,7 @@ app
   // .use(passport.authenticate("session"))
   .use("/generative", generative)
   .use("/nlp", nlp)
-  // .use("/img-procesing", image-procesing)
+  .use("/img_processing", image_processing)
   // .use("/llm", chat)
   .use("/community", community)
   .use("/login", login)
