@@ -15,7 +15,9 @@ import session from "express-session";
 import passport from "passport";
 
 
-
+const home = (req, res) => {
+  res.send("welcome webGIA")
+}
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
@@ -45,15 +47,13 @@ app
   // .use("/llm", chat)
   .use("/community", community)
   .use("/login", login)
+  .use("/", home )
   
   .use(express.static(path.join(__dirname, "utilities")))
 
-  //catch and forward to error handler
-  // .use(function (req, res, next) {
-  //   next(createError(404));
-  // })
+ 
   .listen(process.env.PORT, () => {
     console.log(`server running on http://localhost:${process.env.PORT}/`);
   });
-
+app.timeout = 60000;
 export { app };

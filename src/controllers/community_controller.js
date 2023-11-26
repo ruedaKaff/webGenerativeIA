@@ -3,6 +3,7 @@ import { pool } from "../common/connection.js";
 import "dotenv/config.js";
 
 const find = (req, res = response) => {
+  console.log('Im in fin with get community');
   pool.query(
     `SELECT community.*, users.email
       FROM community
@@ -19,6 +20,7 @@ const find = (req, res = response) => {
 
       // Check the length of the result before accessing its properties
       if (result && result.length > 0) {
+        console.log(result);
         res.json(result);
       } else {
         res.status(404).json({ response: process.env.DEFAULT });
@@ -54,7 +56,7 @@ const findone = (req, res = response) => {
 };
 
 const create = (req, res = response) => {
-
+  console.log('Hi, me dejaron crear un post');
   const { user_id, input, output, outimage, model_type, username } = req.body;
  
   pool.query(

@@ -1,11 +1,9 @@
-
-// export { login };
 import { Router } from "express";
-import UserController from "../controllers/users_controller.js"
+import UserController from "../controllers/users_controller.js";
 import passport from "passport";
 import GoogleStrategy from "passport-google-oauth2";
 import "dotenv/config.js";
-
+import { sessionMiddleware } from "../middlewares/sessionMiddleware.js";
 
 passport.use(
   new GoogleStrategy(
@@ -17,7 +15,7 @@ passport.use(
     },
     async (request, accessToken, refreshToken, profile, done) => {
       try {
-        const user =  await UserController.createUser(profile);
+        const user = await UserController.createUser(profile);
         // console.log(user);
         return done(null, user);
       } catch (err) {
@@ -26,8 +24,9 @@ passport.use(
     }
   )
 );
+
 passport.serializeUser((user, done) => {
-  done(null, user);
+  done(null, { id: user.id, name: user.name, email: user.email, picture: user.picture });
 });
 
 passport.deserializeUser((user, done) => {
@@ -36,8 +35,12 @@ passport.deserializeUser((user, done) => {
 
 const isLoggedIn = (req, res, next) => {
   req.user ? next() : res.sendStatus(401);
-}
+};
+
+/////////////////////////////////////////////////////////////////////////////////////
 const login = Router();
+
+login.use(sessionMiddleware);
 
 login.get("/", function (req, res, next) {
   res.render("login");
@@ -45,32 +48,29 @@ login.get("/", function (req, res, next) {
 
 login.get(
   "/auth/google",
-  passport.authenticate('google', { scope:
-    [ 'email', 'profile' ] }
-));
+  passport.authenticate("google", { scope: ["email", "profile"] })
+);
 
 login.get(
   "/auth/google/callback",
   passport.authenticate("google", {
-    successRedirect: "/login/auth/protected",
+    successRedirect: "/community",
     failureRedirect: "/login/auth/google/failure",
   })
 );
 
-login.get("/auth/google/failure",(req, res )=> {
+login.get("/auth/google/failure", (req, res) => {
   res.send("Something went wrong!");
 });
 
-
-login.get("/auth/protected",isLoggedIn,(req, res )=> {
+login.get("/auth/protected", isLoggedIn, (req, res) => {
   let name = req.user.name;
   res.send(`hello ${name} !`);
 });
 
-login.use('/auth/logout', (req, res) => {
-    req.session.destroy();
-    res.send('See you !')
-})
-
+login.use("/auth/logout", (req, res) => {
+  req.session.destroy();
+  res.send("See you !");
+});
 
 export { login };
