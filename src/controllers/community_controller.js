@@ -38,19 +38,23 @@ const findone = async (req, res = response) => {
 };
 
 
-const create = async (req, res = response) => {
+const create = async (req, res = response, next) => {
+  
   try {
-    console.log('Hi, me dejaron crear un post');
+    console.log('Hi, me dejaron ENTRAR A CREATE');
     const { user_id, input, output, outimage, model_type, username } = req.body;
-
+    console.log("im destructuring the req => "+ req);
     await pool.query(
       `INSERT INTO community (user_id, input, output, outimage, model_type, username, updated_at)
       VALUES (?, ?, ?, ?, ?, ?, NOW());
       `,
       [user_id, input, output, outimage, model_type, username]
     );
-
-    return res.status(200).json({ message: 'Item created successfully' });
+    
+    // 
+    // return res.status(200).json({ message: 'Item created successfully' })
+    console.log('item creado');
+    return next()
   } catch (error) {
     console.error("Error executing query:", error);
     return res.status(500).json({ error: "Internal Server Error" });
