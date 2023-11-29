@@ -10,10 +10,9 @@ import { generative } from "./routes/generative_routes.js";
 import {image_processing} from "./routes/img_routes.js"
 import { nlp } from "./routes/nlp_routes.js";
 import session from "express-session";
-
+import { sessionMiddleware } from "./middlewares/sessionMiddleware.js";
 
 import passport from "passport";
-
 
 const home = (req, res) => {
   res.send("welcome webGIA")
@@ -28,16 +27,7 @@ app
   .set("view engine", "ejs")
   .use(cors())
   .use(json())
-  .use(
-    session({
-      secret: "mySecret",
-      resave: false,
-      saveUninitialized: true,
-      cookie: {
-        secure: false,
-      },
-    })
-  )
+  .use(sessionMiddleware)
   .use(passport.session())
   .use(passport.initialize())
   // .use(passport.authenticate("session"))

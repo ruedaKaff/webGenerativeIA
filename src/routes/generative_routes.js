@@ -11,9 +11,7 @@ const generative = Router();
 generative.get("/", find);
 
 generative.get("/:id", findone);
-// generative.get("/:id", findone);
-// generative.get("/", findone);
 
-generative.delete("/:id");
+// generative.delete("/:id");
 
 export { generative };

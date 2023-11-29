@@ -40,7 +40,7 @@ const isLoggedIn = (req, res, next) => {
 /////////////////////////////////////////////////////////////////////////////////////
 const login = Router();
 
-login.use(sessionMiddleware);
+// login.use(sessionMiddleware);
 
 login.get("/", function (req, res, next) {
   res.render("login");
@@ -54,7 +54,8 @@ login.get(
 login.get(
   "/auth/google/callback",
   passport.authenticate("google", {
-    successRedirect: "/community",
+    successRedirect: "/community/form",
+    // successRedirect: "/login/auth/protected",
     failureRedirect: "/login/auth/google/failure",
   })
 );
