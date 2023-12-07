@@ -2,23 +2,25 @@ import { response } from "express";
 import { pool } from "../common/connection.js";
 import "dotenv/config.js";
 
-const find = async (req, res = response) => {
+const find = async (req, res = response, next) => {
   try {
     const [result] = await pool.query(`
       SELECT community.*, users.email
       FROM community
       INNER JOIN users ON community.user_id = users.id;
     `);
-    console.log("Query result:", result);
-    return result && result.length > 0
-      ? res.json(result)
-      : res.status(404).json({ response: process.env.DEFAULT });
+    // console.log("Query result:", result);
+    if (result && result.length > 0) {
+      res.locals.data = result; // Pass the result to res.locals.data
+      next(); // Call next without passing any arguments
+    } else {
+      res.status(404).json({ response: process.env.DEFAULT });
+    }
   } catch (error) {
     console.error("Error executing query:", error);
     return res.status(500).json({ error: "Internal Server Error" });
   }
 };
-
 const findone = async (req, res = response) => {
   try {
     const [result] = await pool.query(`
