@@ -1,5 +1,5 @@
 import axios from "axios";
-import fs from "fs/promises";
+// import fs from "fs/promises";
 import { response } from "express"; // Assuming 'response' is imported from 'express'
 import "dotenv/config.js";
 
@@ -39,7 +39,7 @@ const captioning = async (req, res = response) => {
   }
 };
 
-const generator = async (req, res) => {
+const generator = async (req, res, next) => {
   console.log("testing generator");
   try {
     const { prompt, negativePrompt, steps, guidance, width, height } = req.body;
@@ -59,7 +59,8 @@ const generator = async (req, res) => {
        res.setHeader('Content-Disposition', 'inline; filename=image.jpg'); // Specify the filename
 
       // Send the binary data as the response
-      res.send(output);
+      
+      res.locals.data = output;
       
     } else {
       return null; // Handle case where output is null
@@ -68,6 +69,7 @@ const generator = async (req, res) => {
     console.error("Error in generator:");
     return null;
   }
+  next();
 };
 
 const imgGEN = async (
@@ -96,10 +98,6 @@ const imgGEN = async (
       const buffer = Buffer.from(response.data);
 
       // Save the Buffer to a file (adjust the filename and path as needed)
-      const filename = "output.jpg";
-      await fs.writeFile(filename, buffer);
-
-      console.log(`Image saved to ${filename}`);
       return buffer;
     } else {
       return null; // Handle error cases appropriately

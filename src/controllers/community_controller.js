@@ -11,8 +11,7 @@ const find = async (req, res = response, next) => {
     `);
     // console.log("Query result:", result);
     if (result && result.length > 0) {
-      res.locals.data = result; // Pass the result to res.locals.data
-      next(); // Call next without passing any arguments
+      res.send(result);
     } else {
       res.status(404).json({ response: process.env.DEFAULT });
     }
@@ -41,7 +40,7 @@ const findone = async (req, res = response) => {
 
 
 const create = async (req, res = response, next) => {
-  
+  console.log("here");
   try {
     console.log('Hi, me dejaron ENTRAR A CREATE');
     const { user_id, input, output, outimage, model_type, username } = req.body;

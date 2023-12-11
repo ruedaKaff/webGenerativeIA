@@ -1,16 +1,20 @@
 // Assuming you have a function to check if the user is logged in
 const isLoggedIn = (req, res, next) => {
-    if (req.user) {
-      console.log("Request Body:", req.body);
-        // res.redirect('/community/form');
-      // If user is authenticated, proceed to the next middleware or route handler
-      return next();
-    } else {
-        console.log("No logeo redireccionando a login");
-        res.redirect('/login'); // Adjust the path to your login route
-    }
-  };
+  console.log("Checking if user is logged in");
+  console.log(req.session.id);
+   
   
+  if (req.session && req.session.passport) {
+    const user = req.session.passport.user;
+    console.log("Session user:", user );
+    // If user is authenticated, proceed to the next middleware or route handler
+    req.user = user;
+    return next();
+  } else {
+    // Send a 401 status code and a message indicating that the user is not authenticated
+    res.send("session doesnt exists");
+  }
+};
   // Middleware to check if the user is logged in for the post request
   const checkLogged = (req, res, next) => {
     if (req.method === 'POST' && req.user) {

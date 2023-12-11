@@ -3,7 +3,11 @@ import UserController from "../controllers/users_controller.js";
 import passport from "passport";
 import GoogleStrategy from "passport-google-oauth2";
 import "dotenv/config.js";
-import { sessionMiddleware } from "../middlewares/sessionMiddleware.js";
+// import { sessionMiddleware } from "../middlewares/sessionMiddleware.js";
+import { isLoggedIn } from "../middlewares/isLoggedIN.js";
+
+/////////////////////////////////////////////////////////////////////////////////////
+const login = Router();
 
 passport.use(
   new GoogleStrategy(
@@ -24,54 +28,74 @@ passport.use(
     }
   )
 );
+passport.deserializeUser((id, done) => {
+  console.log("deserializing user" + id);
+  UserController.getUserById(id)
+  .then((user) => done(null, user))
+  .catch((err) => done(err));
+});
 
 passport.serializeUser((user, done) => {
-  done(null, { id: user.id, name: user.name, email: user.email, picture: user.picture });
-});
-
-passport.deserializeUser((user, done) => {
-  done(null, user);
-});
-
-const isLoggedIn = (req, res, next) => {
-  req.user ? next() : res.sendStatus(401);
-};
-
-/////////////////////////////////////////////////////////////////////////////////////
-const login = Router();
-
-// login.use(sessionMiddleware);
-
-login.get("/", function (req, res, next) {
-  res.render("login");
+  console.log("serializing user" + user.id);
+  done(null, user.id);
 });
 
 login.get(
   "/auth/google",
-  passport.authenticate("google", { scope: ["email", "profile"] })
+  passport.authenticate("google", { scope: ["email", "profile"], prompt: 'select_account' })
 );
 
-login.get(
-  "/auth/google/callback",
-  passport.authenticate("google", {
-    successRedirect: "/community/form",
-    // successRedirect: "/login/auth/protected",
-    failureRedirect: "/login/auth/google/failure",
-  })
-);
+login.get("/auth/google/callback", (req, res, next) => {
+  passport.authenticate("google", (err, user, info) => {
+    if (err) {
+      return next(err);
+    }
+    if (!user) {
+      return res.redirect("/login/auth/google/failure");
+    }
+    req.logIn(user, (err) => {
+      if (err) {
+        return next(err);
+      }
+      req.session.save((err) => {
+        if (err) {
+          return next(err);
+        }
+        console.log(req.session);
+        console.log({ "login/auth/google session id": req.sessionID });
+
+        // Redirect to the protected page directly
+        return res.redirect("http://localhost:3000/community");
+      });
+    });
+  })(req, res, next);
+});
 
 login.get("/auth/google/failure", (req, res) => {
   res.send("Something went wrong!");
 });
 
-login.get("/auth/protected", isLoggedIn, (req, res) => {
-  let name = req.user.name;
-  res.send(`hello ${name} !`);
+login.get("/auth/protected", (req, res) => {
+  console.log({ "/auth/protected session id": req.sessionID });
+  // let name = req.user.name;
+  // res.send(`hello ${name} !`);
+  console.log("protected are breaking");
+});
+
+login.get("/auth/session", isLoggedIn, async (req, res) => {
+
+  const user = await UserController.getUserById(req.user);
+  if (user === 0 ) {
+    console.log("User does not exist");
+    return res.status(404).send({ error: "User does not exist" });
+  }
+  res.send({ user: user });
 });
 
 login.use("/auth/logout", (req, res) => {
   req.session.destroy();
-  res.send("See you !");
+  res.clearCookie("connect.sid");
+  res.redirect("http://localhost:3000/");
 });
 
 export { login };

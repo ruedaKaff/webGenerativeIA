@@ -4,6 +4,7 @@ const validateLength = (value, maxLength) => {
   
 
 const trimMiddleware = (req, res, next) => {
+  console.log("TRIMMING");
     for (const key in req.body) {
       if (typeof req.body[key] === 'string') {
         // Aplicar trim

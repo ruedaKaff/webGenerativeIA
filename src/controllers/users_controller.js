@@ -4,14 +4,14 @@ import { pool } from "../common/connection.js";
 const UserController = {
   createUser: async (profile) => {
     try {
-      console.log(profile._json);
+     
       const { name, email, email_verified, picture, locale } = profile._json;
       // Check if the user already exists in the database based on email
       const [existingUser] = await pool.query(
         "SELECT * FROM users WHERE email = ?",
         [email]
       );
-      console.log(profile._json);
+      
       if (existingUser.length > 0) {
         // User already exists, update the user with Google data
         await pool.query(
@@ -41,6 +41,20 @@ const UserController = {
       }
     } catch (error) {
       console.error("Error in createUser:", error);
+      throw error;
+    }
+  },
+  
+  getUserById: async (id) => {
+    try {
+
+      const [user] = await pool.query(
+        "SELECT * FROM users WHERE id = ?",
+        [id]
+      );
+      return user[0];
+    } catch (error) {
+      console.error("Error in getUserById:", error);
       throw error;
     }
   },

@@ -4,18 +4,18 @@ const bufferToBase64 = (req, res, next) => {
   console.log("Entering bufferToBase64 middleware");
 
   if (res.locals.data) {
-    // console.log("res.locals.data exists");
-    // console.log("First item's outimage:", res.locals.data[0].outimage);
-
     res.locals.data = res.locals.data.map((item, index) => {
-      console.log(`Processing item at index ${index}`);
-
       if (item.outimage) {
-        console.log("Item has outimage data, converting to base64");
-        let base64Image = item.outimage.toString('base64'); // Convert item.outimage directly to base64
-        item.outimage = base64Image;
-      } else {
-        console.log("Item does not have outimage data, skipping conversion");
+        console.log("Item has outimage data");
+
+        // Always convert Buffer data to a base64 string
+        if (Buffer.isBuffer(item.outimage)) {
+          console.log("Outimage data is a Buffer, converting to base64");
+          let base64Image = item.outimage.toString('base64');
+          item.outimage = base64Image;
+        }else {
+          console.log("the image is already a base64 string");
+        }
       }
 
       return item;
@@ -24,7 +24,18 @@ const bufferToBase64 = (req, res, next) => {
     console.log("res.locals.data does not exist");
   }
 
-  console.log("Exiting bufferToBase64 middleware");
   next();
 };
-export { bufferToBase64 };
+
+const generatedToBase64 = (req, res, next) => {
+  if (res.locals.data) {
+    // Convert the image buffer to a base64 string
+    const base64Image = Buffer.from(res.locals.data).toString('base64');
+
+    // Replace the image buffer with the base64 string
+    res.locals.data = base64Image;
+  }
+
+  next();
+};
+export { bufferToBase64, generatedToBase64 };
