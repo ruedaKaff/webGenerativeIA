@@ -17,7 +17,6 @@ const bufferToBase64 = (req, res, next) => {
           console.log("the image is already a base64 string");
         }
       }
-
       return item;
     });
   } else {

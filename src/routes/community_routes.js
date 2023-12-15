@@ -19,10 +19,8 @@ community.get("/", find );
 community.get("/:id", findone);
 
 community.post("/", isLoggedIn, create, async (req, res) => {
-  
-  return res.redirect("/community");
+  return res.json({ message: 'Community created successfully' });
 });
-
 community.delete("/:id");
 
 // community.put("/");

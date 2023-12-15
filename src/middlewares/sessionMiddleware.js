@@ -15,8 +15,8 @@ const sessionMiddleware = session({
   saveUninitialized: false,
   cookie: {
     secure: false,
-    httpOnly: true,
-    sameSite: "strict",
+    httpOnly: false,
+    sameSite: "lax",
     maxAge: TWO_HOURS_IN_MS,
   },
 });

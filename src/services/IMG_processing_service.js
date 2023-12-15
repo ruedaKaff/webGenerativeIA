@@ -51,6 +51,8 @@ const generator = async (req, res, next) => {
       width: width,
       height: height,
     };
+    console.log(prompt);
+    console.log("params:", params);
     const uniquePrompt = `${prompt}_${Math.floor(Date.now() / 1000)}`;
     const output = await imgGEN(uniquePrompt, params);
 
@@ -103,7 +105,7 @@ const imgGEN = async (
       return null; // Handle error cases appropriately
     }
   } catch (error) {
-    console.error("Error in getCompletion:", error);
+    console.error("Error in getCompletion:");
     return null;
   }
 };
