@@ -75,12 +75,12 @@ login.get("/auth/google/failure", (req, res) => {
   res.send("Something went wrong!");
 });
 
-login.get("/auth/protected", (req, res) => {
-  console.log({ "/auth/protected session id": req.sessionID });
-  // let name = req.user.name;
-  // res.send(`hello ${name} !`);
-  console.log("protected are breaking");
-});
+// login.get("/auth/protected", (req, res) => {
+//   console.log({ "/auth/protected session id": req.sessionID });
+//   // let name = req.user.name;
+//   // res.send(`hello ${name} !`);
+//   console.log("protected are breaking");
+// });
 
 login.get("/auth/session", isLoggedIn, async (req, res) => {
 
@@ -92,10 +92,12 @@ login.get("/auth/session", isLoggedIn, async (req, res) => {
   res.send({ user: user });
 });
 
-login.use("/auth/logout", (req, res) => {
+login.get("/auth/logout", (req, res) => {
+ 
   req.session.destroy();
   res.clearCookie("connect.sid");
-  res.redirect("http://localhost:3000/");
+  console.log("BYE BYE! ");
+  
 });
 
 export { login };

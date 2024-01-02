@@ -42,7 +42,7 @@ const captioning = async (req, res = response) => {
 const generator = async (req, res, next) => {
   console.log("testing generator");
   try {
-    const { prompt, negativePrompt, steps, guidance, width, height } = req.body;
+    const { prompt, negativePrompt, steps, guidance, width, height } = req.body.imageGen;
 
     const params = {
       negative_prompt: negativePrompt,
